@@ -1,10 +1,10 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Language Education Data",
+    "objectID": "sources.html",
+    "href": "sources.html",
+    "title": "Sources",
     "section": "",
-    "text": "Using US census data to derive how the language that you speak in the US is correlated to your educational status revealed some interesting discoveries. It is quite interesting to see how you are almost just as likely to get a bachelors degree as someone who speaks Does not speak English or Spanish in the household as someone who only speaks English. It is unfortunate to see Spanish Speakers lacking behind. As a person who speaks Spanish in the house myself it is disheartening but also motivating to see the massive gap between bachelor rates of Spanish speakers and those of English speakers."
+    "text": "The data in this project was extracted from the US Census Bureau. The data are downloaded in a CSV to make the data easier to read as a human, although this CSV file is never actually used in the code, instead, an API key was used to extract the necessary data directly from the US Census Bureau database.\nThe data are then trimmed down to only the necessary variables which can be used to create the plot. the tidycensus and tidyverse libraries were used in this project. No observations were explicitly removed, however those that were not being looked at were not used."
   },
   {
     "objectID": "about.html",
@@ -14,10 +14,10 @@
     "text": "I am Nicholas Oliver Silveira Powell, An American who often speaks Spanish at home. I can be contacted at nicholasospowell@gmail.com and my github is https://github.com/nickospowell\nThis project was made in order to look at education rates of those who speak different languages all around the US. It can be found at https://github.com/nickospowell/language-education\nThis project was created as a part of Kane’s Data Science Bootcamp. https://bootcamp.davidkane.info/"
   },
   {
-    "objectID": "sources.html",
-    "href": "sources.html",
-    "title": "Sources",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Language Education Data",
     "section": "",
-    "text": "The data in this project was extracted from the US Census Bureau. The data are downloaded in a CSV to make the data easier to read as a human, although this CSV file is never actually used in the code, instead, an API key was used to extract the necessary data directly from the US Census Bureau database.\nThe data are then trimmed down to only the necessary variables which can be used to create the plot. the tidycensus and tidyverse libraries were used in this project. No observations were explicitly removed, however those that were not being looked at were not used."
+    "text": "Using US census data to derive how the language that you speak in the US is correlated to your educational status revealed some interesting discoveries. It is quite interesting to see how you are almost just as likely to get a bachelors degree as someone who speaks Does not speak English or Spanish in the household as someone who only speaks English. It is unfortunate to see Spanish Speakers lacking behind. As a person who speaks Spanish in the house myself it is disheartening but also motivating to see the massive gap between bachelor rates of Spanish speakers and those of English speakers."
   }
 ]

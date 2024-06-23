@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 2601eb87-e6c3-461d-bb96-d477ff855e1a
+      url: 'https://nosp41.quarto.pub/language-education'
