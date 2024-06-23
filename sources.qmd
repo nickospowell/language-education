@@ -1,0 +1,7 @@
+---
+title: "Sources"
+---
+
+The data in this project was extracted from the US Census Bureau. The data are downloaded in a CSV to make the data easier to read as a human, although this CSV file is never actually used in the code, instead, an API key was used to extract the necessary data directly from the US Census Bureau database. 
+
+The data are then trimmed down to only the necessary variables which can be used to create the plot. the tidycensus and tidyverse libraries were used in this project. No observations were explicitly removed, however those that were not being looked at were not used.

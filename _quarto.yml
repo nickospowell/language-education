@@ -1,0 +1,21 @@
+project:
+  type: website
+
+website:
+  title: "Language Education"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - sources.qmd
+      - highschool.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+
+

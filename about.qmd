@@ -1,0 +1,9 @@
+---
+title: "About"
+---
+
+I am Nicholas Oliver Silveira Powell, An American who often speaks Spanish at home. I can be contacted at nicholasospowell@gmail.com and my github is https://github.com/nickospowell
+
+This project was made in order to look at education rates of those who speak different languages all around the US. It can be found at https://github.com/nickospowell/language-education
+
+This project was created as a part of Kane's Data Science Bootcamp. https://bootcamp.davidkane.info/

@@ -1,0 +1,82 @@
+---
+title: "Language Education Data"
+execute: 
+  echo: false
+---
+
+```{r}
+#| message: false
+#| label: setup
+
+library(tidycensus)
+library(tidyverse)
+```
+
+
+```{r}
+#| label: data
+#| message: false
+
+
+# Find and display correct variables from the S1603 table
+variables <- load_variables(2022, "acs5", cache = TRUE) %>%
+  filter(str_detect(name, "S1603"))
+
+# Define the correct variables based on the output of load_variables
+variables <- c(
+  english_total = "S1603_C02_001E",   # Total population speaking only English
+  spanish_total = "S1603_C06_001E",   # Total population speaking Spanish
+  other_total = "S1603_C04_001E",     # Total population speaking other languages
+  english_bachelors = "S1603_C02_016E", # Bachelor's degree or higher for English speakers
+  spanish_bachelors = "S1603_C06_016E", # Bachelor's degree or higher for Spanish speakers
+  other_bachelors = "S1603_C04_016E"    # Bachelor's degree or higher for other language speakers
+)
+
+# Fetch data for the entire US
+data <- get_acs(
+  geography = "us",
+  variables = variables,
+  year = 2022,
+  survey = "acs5",
+  output = "wide"
+)
+
+# Calculate percentage of population with bachelor's degree
+data <- data %>%
+  mutate(
+    english_percentage_bachelors = (english_bachelors / english_total) * 100,
+    spanish_percentage_bachelors = (spanish_bachelors / spanish_total) * 100,
+    other_percentage_bachelors = (other_bachelors / other_total) * 100
+  )
+
+# Reshape data for plotting
+data_long <- data %>%
+  select(english_percentage_bachelors, spanish_percentage_bachelors, other_percentage_bachelors) %>%
+  pivot_longer(cols = everything(), names_to = "language", values_to = "percentage_bachelors") %>%
+  mutate(language = case_when(
+    language == "english_percentage_bachelors" ~ "English",
+    language == "spanish_percentage_bachelors" ~ "Spanish",
+    language == "other_percentage_bachelors" ~ "Other"
+  ))
+
+# Create the bar graph using ggplot2
+
+```
+
+```{r}
+#| label: plot
+
+ggplot(data_long, aes(x = language, y = percentage_bachelors)) +
+  geom_bar(stat = "identity", fill = "skyblue", width = 0.7) +
+  labs(
+    title = "Percentage of Population with Bachelor's Degree by Language Spoken at Home",
+    subtitle = "In the US, most Non-English Speakers are almost as likely to get bachelors degrees as\nEnglish Speakers",
+    x = "Language Spoken at Home",
+    y = "Percentage with Bachelor's Degree"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Using US census data to derive how the language that you speak in the US is correlated to your educational status revealed some interesting discoveries. It is quite interesting to see how you are almost just as likely to get a bachelors degree as someone who speaks Does not speak English or Spanish in the household as someone who only speaks English. It is unfortunate to see Spanish Speakers lacking behind. As a person who speaks Spanish in the house myself it is disheartening but also motivating to see the massive gap between bachelor rates of Spanish speakers and those of English speakers.
+
