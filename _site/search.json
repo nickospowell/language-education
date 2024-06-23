@@ -18,6 +18,6 @@
     "href": "index.html",
     "title": "Language Education Data",
     "section": "",
-    "text": "Using US census data to derive how the language that you speak in the US is correlated to your educational status revealed some interesting discoveries. It is quite interesting to see how you are almost just as likely to get a bachelors degree as someone who speaks Does not speak English or Spanish in the household as someone who only speaks English. It is unfortunate to see Spanish Speakers lacking behind. As a person who speaks Spanish in the house myself it is disheartening but also motivating to see the massive gap between bachelor rates of Spanish speakers and those of English speakers."
+    "text": "Depending on what language you speak at home, education rates can vary. The following data was pulled from the US Census Bureau. The relevant variables were pulled to analyse the relationship between language spoken at home and education rate. While Spanish speakers seem to be at a disadvantage when it comes to education, speakers of other languages are doing almost as well as English speakers."
   }
 ]
