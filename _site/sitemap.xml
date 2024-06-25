@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nosp41.quarto.pub/language-education/sources.html</loc>
-    <lastmod>2024-06-23T17:35:23.588Z</lastmod>
+    <loc>https://nosp41.quarto.pub/language-education/split_graphs.html</loc>
+    <lastmod>2024-06-25T21:49:40.931Z</lastmod>
   </url>
   <url>
-    <loc>https://nosp41.quarto.pub/language-education/highschool.html</loc>
-    <lastmod>2024-06-23T17:35:21.935Z</lastmod>
+    <loc>https://nosp41.quarto.pub/language-education/poverty.html</loc>
+    <lastmod>2024-06-25T20:09:09.939Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nosp41.quarto.pub/language-education/index.html</loc>
+    <lastmod>2024-06-25T21:45:43.428Z</lastmod>
   </url>
   <url>
     <loc>https://nosp41.quarto.pub/language-education/about.html</loc>
     <lastmod>2024-06-23T17:35:25.403Z</lastmod>
   </url>
   <url>
-    <loc>https://nosp41.quarto.pub/language-education/index.html</loc>
-    <lastmod>2024-06-23T17:34:48.679Z</lastmod>
+    <loc>https://nosp41.quarto.pub/language-education/nativity.html</loc>
+    <lastmod>2024-06-25T19:56:10.713Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nosp41.quarto.pub/language-education/sources.html</loc>
+    <lastmod>2024-06-23T17:35:23.588Z</lastmod>
   </url>
 </urlset>

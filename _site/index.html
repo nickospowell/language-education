@@ -101,8 +101,12 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Sources</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./highschool.html"> 
-<span class="menu-text">Highschool Data</span></a>
+    <a class="nav-link" href="./split_graphs.html"> 
+<span class="menu-text">Current Split Graphs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./nativity.html"> 
+<span class="menu-text">Nativity</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -149,7 +153,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Depending on what language you speak at home, education rates can vary. The following data was pulled from the US Census Bureau. The relevant variables were pulled to analyse the relationship between language spoken at home and education rate. While Spanish speakers seem to be at a disadvantage when it comes to education, speakers of other languages are doing almost as well as English speakers.</p>
+<p>21.6% of Americans speak a language other than English at home. The following data was pulled from the US Census Bureau. The relevant variables were pulled to analyse the relationship between language spoken at home and education rate. While Spanish speakers seem to be at a disadvantage when it comes to education, speakers of other languages are doing almost as well as English speakers.</p>
 
 
 
@@ -235,7 +239,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/nosp41\.quarto\.pub\/language-education");
+      var filterRegex = new RegExp('/' + window.location.host + '/');
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

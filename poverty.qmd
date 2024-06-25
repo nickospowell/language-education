@@ -1,0 +1,79 @@
+---
+title: "Poverty Rates"
+execute: 
+  echo: false
+---
+
+```{r}
+#| message: false
+#| label: setup
+
+library(tidycensus)
+library(tidyverse)
+```
+
+
+```{r}
+#| label: data
+#| message: false
+
+
+# Find and display correct variables from the S1603 table
+variables <- load_variables(2022, "acs5", cache = TRUE) %>%
+  filter(str_detect(name, "S1603"))
+
+# Define the correct variables based on the output of load_variables
+variables <- c(
+  english_total = "S1603_C02_001E",   
+  spanish_total = "S1603_C06_001E",   
+  other_total = "S1603_C04_001E",     
+  english_poverty = "S1603_C02_010E" ,
+  spanish_poverty = "S1603_C06_010E" , 
+  other_poverty = "S1603_C04_010E"
+ 
+)
+
+# Fetch data for the entire US
+data <- get_acs(
+  geography = "us",
+  variables = variables,
+  year = 2022,
+  survey = "acs5",
+  output = "wide"
+)
+
+
+
+# Calculate percentage of population with bachelor's degree
+data <- data %>%
+  mutate(
+    english_percentage_poverty = ((english_poverty) / english_total) * 100,
+    spanish_percentage_poverty = ((spanish_poverty) / spanish_total) * 100,
+    other_percentage_poverty = ((other_poverty) / other_total) * 100,
+  )
+
+# Reshape data for plotting
+data_long <- data %>%
+  select(english_percentage_poverty, spanish_percentage_poverty, other_percentage_poverty) %>%
+  pivot_longer(cols = everything(), names_to = "language", values_to = "percentage_poverty") %>%
+  mutate(language = case_when(
+    language == "english_percentage_poverty" ~ "English",
+    language == "spanish_percentage_poverty" ~ "Spanish",
+    language == "other_percentage_poverty" ~ "Other"
+  ))
+```
+
+```{r}
+#| label: plot
+
+ggplot(data_long, aes(x = language, y = percentage_poverty, fill = language)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  labs(
+    title = "Percentage of Population in Poverty by Language Spoken at Home",
+    subtitle = "English speakers are significantly less likely to be in poverty",
+    x = "Language Spoken at Home",
+    y = "Percentage in Poverty"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```

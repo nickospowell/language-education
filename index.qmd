@@ -10,6 +10,9 @@ execute:
 
 library(tidycensus)
 library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(stringr)
 ```
 
 
@@ -17,66 +20,109 @@ library(tidyverse)
 #| label: data
 #| message: false
 
+# Define the years of interest
+years <- 2015:2022
 
-# Find and display correct variables from the S1603 table
-variables <- load_variables(2022, "acs5", cache = TRUE) %>%
-  filter(str_detect(name, "S1603"))
+# Function to fetch and process data for a specific year
+fetch_process_data <- function(year) {
+  # Find and display correct variables from the S1603 table
+  variables <- load_variables(year, "acs5", cache = TRUE) %>%
+    filter(str_detect(name, "S1603"))
 
-# Define the correct variables based on the output of load_variables
-variables <- c(
-  english_total = "S1603_C02_001E",   # Total population speaking only English
-  spanish_total = "S1603_C06_001E",   # Total population speaking Spanish
-  other_total = "S1603_C04_001E",     # Total population speaking other languages
-  english_bachelors = "S1603_C02_016E", # Bachelor's degree or higher for English speakers
-  spanish_bachelors = "S1603_C06_016E", # Bachelor's degree or higher for Spanish speakers
-  other_bachelors = "S1603_C04_016E"    # Bachelor's degree or higher for other language speakers
-)
-
-# Fetch data for the entire US
-data <- get_acs(
-  geography = "us",
-  variables = variables,
-  year = 2022,
-  survey = "acs5",
-  output = "wide"
-)
-
-# Calculate percentage of population with bachelor's degree
-data <- data %>%
-  mutate(
-    english_percentage_bachelors = (english_bachelors / english_total) * 100,
-    spanish_percentage_bachelors = (spanish_bachelors / spanish_total) * 100,
-    other_percentage_bachelors = (other_bachelors / other_total) * 100
+  # Define the correct variables based on the output of load_variables
+  variables <- c(
+    english_all = "S1603_C02_001E",
+    spanish_all = "S1603_C06_001E",
+    other_all = "S1603_C04_001E",
+    english_youth = "S1603_C02_002E",
+    spanish_youth = "S1603_C06_002E",
+    other_youth = "S1603_C04_002E",
+    english_bachelors = "S1603_C02_016E",
+    spanish_bachelors = "S1603_C06_016E",
+    other_bachelors = "S1603_C04_016E",
+    english_grads = "S1603_C02_015E",
+    spanish_grads = "S1603_C06_015E",
+    other_grads = "S1603_C04_015E",
+    english_hs = "S1603_C02_014E",
+    spanish_hs = "S1603_C06_014E",
+    other_hs = "S1603_C04_014E"
   )
 
+  # Fetch data for the entire US
+  data <- get_acs(
+    geography = "us",
+    variables = variables,
+    year = year,
+    survey = "acs5",
+    output = "wide"
+  )
+
+  # Calculate derived variables
+  data <- data %>%
+    mutate(
+      english_total = english_all - english_youth,
+      spanish_total = spanish_all - spanish_youth,
+      other_total = other_all - other_youth,
+      english_percentage_hs = ((english_bachelors + english_grads + english_hs) / english_total) * 100,
+      spanish_percentage_hs = ((spanish_bachelors + spanish_grads + spanish_hs) / spanish_total) * 100,
+      other_percentage_hs = ((other_bachelors + other_grads + other_hs) / other_total) * 100,
+      english_percentage_bachelors = (english_bachelors / english_total) * 100,
+      spanish_percentage_bachelors = (spanish_bachelors / spanish_total) * 100,
+      other_percentage_bachelors = (other_bachelors / other_total) * 100,
+      english_percentage_grads = ((english_bachelors + english_grads) / english_total) * 100,
+      spanish_percentage_grads = ((spanish_bachelors + spanish_grads) / spanish_total) * 100,
+      other_percentage_grads = ((other_bachelors + other_grads) / other_total) * 100
+    )
+
+  # Add a year column for later aggregation
+  data <- data %>%
+    mutate(year = year)
+
+  return(data)
+}
+
+# Fetch and process data for all years
+data_all_years <- map_dfr(years, fetch_process_data)
+
 # Reshape data for plotting
-data_long <- data %>%
-  select(english_percentage_bachelors, spanish_percentage_bachelors, other_percentage_bachelors) %>%
-  pivot_longer(cols = everything(), names_to = "language", values_to = "percentage_bachelors") %>%
+data_long <- data_all_years %>%
+  select(year, english_percentage_bachelors, spanish_percentage_bachelors, other_percentage_bachelors, 
+         english_percentage_hs, spanish_percentage_hs, other_percentage_hs, 
+         english_percentage_grads, spanish_percentage_grads, other_percentage_grads) %>%
+  pivot_longer(
+    cols = -year,
+    names_to = c("language", "education_level"),
+    names_pattern = "(.*)_(percentage_.*)",
+    values_to = "percentage"
+  ) %>%
   mutate(language = case_when(
-    language == "english_percentage_bachelors" ~ "English",
-    language == "spanish_percentage_bachelors" ~ "Spanish",
-    language == "other_percentage_bachelors" ~ "Other"
+    language == "english" ~ "English",
+    language == "spanish" ~ "Spanish",
+    language == "other" ~ "Other"
   ))
 
-# Create the bar graph using ggplot2
+# Calculate mean percentages for each language and education level across years
+mean_data <- data_long %>%
+  group_by(year, education_level, language) %>%
+  summarise(mean_percentage = mean(percentage, na.rm = TRUE))
 
 ```
 
 ```{r}
 #| label: plot
 
-ggplot(data_long, aes(x = language, y = percentage_bachelors)) +
-  geom_bar(stat = "identity", fill = "skyblue", width = 0.7) +
-  labs(
-    title = "Percentage of Population with Bachelor's Degree by Language Spoken at Home",
-    subtitle = "In the US, most Non-English Speakers are almost as likely to get bachelors degrees as\nEnglish Speakers",
-    x = "Language Spoken at Home",
-    y = "Percentage with Bachelor's Degree"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(mean_data, aes(x = year, y = mean_percentage, color = language, linetype = education_level)) +
+  geom_line(linewidth = 1) +
+  labs(title = "Mean Percentage by Education Level and Language (2015-2022)",
+       subtitle = "Education rates vary wildly but all seem to increase at the same rate",
+       x = "Year",
+       y = "Mean Percentage",
+       color = "Language",
+       linetype = "Education Level",
+       caption = "Source: US Census Bureau") +
+  theme_minimal()
+
 ```
 
-Depending on what language you speak at home, education rates can vary. The following data was pulled from the US Census Bureau. The relevant variables were pulled to analyse the relationship between language spoken at home and education rate. While Spanish speakers seem to be at a disadvantage when it comes to education, speakers of other languages are doing almost as well as English speakers.
+21.6% of Americans speak a language other than English at home. The following data was pulled from the US Census Bureau. The relevant variables were pulled to analyse the relationship between language spoken at home and education rate. While Spanish speakers seem to be at a disadvantage when it comes to education, speakers of other languages are doing almost as well as English speakers.
 

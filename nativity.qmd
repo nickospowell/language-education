@@ -1,0 +1,106 @@
+---
+title: "Nativity"
+execute: 
+  echo: false
+---
+
+```{r}
+#| message: false
+#| label: setup
+
+library(tidycensus)
+library(tidyverse)
+```
+
+
+```{r}
+#| label: data
+#| message: false
+
+
+# Find and display correct variables from the S1603 table
+variables <- load_variables(2022, "acs5", cache = TRUE) %>%
+  filter(str_detect(name, "S1603"))
+
+# Define the correct variables based on the output of load_variables
+variables <- c(
+  english_total = "S1603_C02_001E",   
+  spanish_total = "S1603_C06_001E",   
+  other_total = "S1603_C04_001E",     
+  english_natives = "S1603_C02_005E" ,
+  spanish_natives = "S1603_C06_005E" , 
+  other_natives = "S1603_C04_005E", 
+  english_naturalized = "S1603_C02_007E" ,
+  spanish_naturalized = "S1603_C06_007E" , 
+  other_naturalized = "S1603_C04_007E", 
+  english_non_citizens = "S1603_C02_008E" ,
+  spanish_non_citizens = "S1603_C06_008E" , 
+  other_non_citizens = "S1603_C04_008E"
+ 
+)
+
+# Fetch data for the entire US
+data <- get_acs(
+  geography = "us",
+  variables = variables,
+  year = 2022,
+  survey = "acs5",
+  output = "wide"
+)
+
+
+
+# Calculate percentage of population with bachelor's degree
+data <- data %>%
+  mutate(
+    english_percentage_natives = ((english_natives) / english_total) * 100,
+    spanish_percentage_natives = ((spanish_natives) / spanish_total) * 100,
+    other_percentage_natives = ((other_natives) / other_total) * 100,
+    english_percentage_naturalized = ((english_naturalized) / english_total) * 100,
+    spanish_percentage_naturalized = ((spanish_naturalized) / spanish_total) * 100,
+    other_percentage_naturalized = ((other_naturalized) / other_total) * 100,
+    english_percentage_non_citizens = ((english_non_citizens) / english_total) * 100,
+    spanish_percentage_non_citizens = ((spanish_non_citizens) / spanish_total) * 100,
+    other_percentage_non_citizens = ((other_non_citizens) / other_total) * 100
+  )
+
+# Reshape data for plotting
+data_long <- data %>%
+  select(english_percentage_natives, spanish_percentage_natives, other_percentage_natives, 
+         english_percentage_naturalized, spanish_percentage_naturalized, other_percentage_naturalized, 
+         english_percentage_non_citizens, spanish_percentage_non_citizens, other_percentage_non_citizens) %>%
+  pivot_longer(
+    cols = everything(), 
+    names_to = c("language", "nativity_level"), 
+    names_pattern = "(.*)_(percentage_.*)",
+    values_to = "percentage"
+  ) %>%
+  mutate(language = case_when(
+    language == "english" ~ "English",
+    language == "spanish" ~ "Spanish",
+    language == "other" ~ "Other"
+  ))
+mean_data <- data_long %>%
+  group_by(nativity_level, language) %>%
+  summarise(mean_percentage = mean(percentage, na.rm = TRUE))
+```
+
+```{r}
+#| label: plot
+
+ggplot(mean_data, aes(x = nativity_level, y = mean_percentage, fill = language)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Percentage by Nativity and Language",
+       subtitle = "Spanish has a higher percentage of nativeborn citizens than Other",
+       x = "Nativity",
+       y = "Mean Percentage",
+       fill = "Language", 
+       caption = "Source: US Census Bureau") +
+  scale_x_discrete(labels = c(
+    "percentage_natives" = "Native Born",
+    "percentage_naturalized" = "Naturalized",
+    "percentage_non_citizens" = "Non Citiznes")) +
+  theme_minimal()
+```
+
+

@@ -9,7 +9,8 @@ website:
         text: Home
       - about.qmd
       - sources.qmd
-      - highschool.qmd
+      - split_graphs.qmd
+      - nativity.qmd
 
 format:
   html:
